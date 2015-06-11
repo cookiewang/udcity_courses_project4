@@ -472,8 +472,9 @@ var resizePizzas = function(size) {
 window.performance.mark("mark_start_generating"); // collect timing data
 
 // This for-loop actually creates and appends all of the pizzas when the page loads
+//declare the pizzasDiv variable ("var pizzasDiv;") outside the loop, so only make one DOM call.
+var pizzasDiv = document.getElementById("randomPizzas");
 for (var i = 2; i < 100; i++) {
-  var pizzasDiv = document.getElementById("randomPizzas");
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
@@ -503,20 +504,23 @@ function logAverageFrame(times) {   // times is the array of User Timing measure
 // Moves the sliding background pizzas based on scroll position
 //modified on function updatePositions by moving the variables defined in for loop
 // out of the loop to reduce the times of selecting all the elements with class 'mover'.
-
+// use the translationX property.
 var items = [];
 function updatePositions() {
   frame++;
   window.performance.mark("mark_start_frame");
-  if(items.length == 0){
+  if(items.length === 0){
       //use document.getElementsByClassName('mover') instead of document.querySelectorAll('.mover').
       items = document.getElementsByClassName('mover');
   }
-  var phase = 0;
-  for (var i = 0; i < items.length; i++) {
-    phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-    items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
+    var phase = 0;
+    var lg = items.length;
+    var intFrameWidth = window.innerWidth;
+    for (var i = 0; i < lg; i++) {
+        phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
+        items[i].style.transform = ("translateX(" + (intFrameWidth * phase)+ "%)");
+    }
+
 
   // User Timing API to the rescue again. Seriously, it's worth learning.
   // Super easy to create custom metrics.
@@ -533,18 +537,25 @@ window.addEventListener('scroll', updatePositions);
 
 // Generates the sliding pizzas when the page loads.
 //reduce the number of animating pizzas
+//dynamically calculate the number of pizzas needed to fill the screen
 document.addEventListener('DOMContentLoaded', function() {
+  var intViewportHeight = window.innerHeight;
   var cols = 8;
+  var row = intViewportHeight / 100;
+  var numEle = row * cols;
   var s = 256;
-  for (var i = 0; i < 20; i++) {
-    var elem = document.createElement('img');
+  var pizElement = document.getElementById("movingPizzas1");
+    console.log("numEle:" + numEle);
+  var elem;
+  for (var i = 0; i < numEle; i++) {
+    elem = document.createElement('img');
     elem.className = 'mover';
     elem.src = "images/pizza.png";
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
-    document.querySelector("#movingPizzas1").appendChild(elem);
+    pizElement.appendChild(elem);
   }
-  updatePositions();
+    updatePositions();
 });
