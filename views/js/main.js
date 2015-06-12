@@ -513,12 +513,12 @@ function updatePositions() {
       //use document.getElementsByClassName('mover') instead of document.querySelectorAll('.mover').
       items = document.getElementsByClassName('mover');
   }
-    var phase = 0;
+    var phase;
     var lg = items.length;
-    var intFrameWidth = window.innerWidth;
+    var top = document.body.scrollTop;
     for (var i = 0; i < lg; i++) {
-        phase = Math.sin((document.body.scrollTop / 1250) + (i % 5));
-        items[i].style.transform = ("translateX(" + (intFrameWidth * phase)+ "%)");
+        phase = Math.sin((top / 1250) + (i % 5));
+        items[i].style.transform = ('translateX(' + (100 * phase)+ 'px)');
     }
 
 
@@ -554,6 +554,7 @@ document.addEventListener('DOMContentLoaded', function() {
     elem.style.height = "100px";
     elem.style.width = "73.333px";
     elem.basicLeft = (i % cols) * s;
+    elem.style.left = (i % cols) * s + 'px';
     elem.style.top = (Math.floor(i / cols) * s) + 'px';
     pizElement.appendChild(elem);
   }
